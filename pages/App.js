@@ -1,5 +1,5 @@
 import React from 'react';
-import { MoviesList } from "./MoviesList";
+import { MoviesList } from "../Movies/MoviesList";
 import "./App.css"
 
 function App() {

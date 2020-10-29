@@ -15,15 +15,18 @@ import Filter from "../pages/Filter";
 //     }
 // ]
 
-const API_URL = 'https://api.themoviedb.org/3/discover/movie?api_key=d26eaf26ff20294542616f68808ce09f&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=1';
+const API_URL = 'https://api.themoviedb.org/3/discover/movie?language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=1&api_key=';
+const CONFIG_URL = 'https://api.themoviedb.org/3/configuration?api_key=';
 
 export function MoviesList() {
+    console.log(process.env.MOVIE_API);
     const [ filter, setFilter ] = useState("");
     const [ movies, setMovies ] = useState([]);
+    const [ config, setConfig ] = useState({});
 
     const getMovies = async () => {
         try {
-            const res = await fetch(API_URL);
+            const res = await fetch(API_URL + process.env.MOVIE_API);
             const data = await res.json();
             setMovies(data.results);
         } catch (e) {
@@ -31,19 +34,30 @@ export function MoviesList() {
         }
     }
 
+    const getConfig = async () => {
+        try {
+            const res = await fetch(CONFIG_URL + process.env.MOVIE_API);
+            const config = await res.json();
+            setConfig(config);
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
     useEffect(() => {
         getMovies();
+        getConfig();
     }, [])
 
     return (
         <div>
             <Filter filter={filter} setFilter={setFilter} />
-            <ul>
+            <ul className="movies_list">
                 { movies.filter((movie) => {
                     return movie.title.toLowerCase().includes(filter.toLowerCase());
                 }).map((movie) => {
                     return (
-                        <Movie key={movie.id} movie={movie}/>
+                        <Movie key={movie.id} config={config} movie={movie}/>
                     )
                 }) }
             </ul>
